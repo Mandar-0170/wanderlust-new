@@ -14,20 +14,18 @@ variable "environment" {
   type        = string
 }
 
-# -- Networking
-
-variable "subnet_cidr" {
-  description = "CIDR range for the GKE subnet (node IPs)"
-  type        = string
-}
-
-variable "pods_cidr" {
-  description = "Secondary CIDR range for GKE pods"
-  type        = string
-}
-
-variable "services_cidr" {
-  description = "Secondary CIDR range for GKE services"
-  type        = string
-}
-
+# -- Networking (uncomment when subnet ranges are available)
+# variable "subnet_cidr" {
+#   description = "CIDR range for the GKE subnet (node IPs)"
+#   type        = string
+# }
+#
+# variable "pods_cidr" {
+#   description = "Secondary CIDR range for GKE pods"
+#   type        = string
+# }
+#
+# variable "services_cidr" {
+#   description = "Secondary CIDR range for GKE services"
+#   type        = string
+# }
