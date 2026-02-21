@@ -8,3 +8,7 @@ subnet_cidr   = "10.0.0.0/28"
 pods_cidr     = "10.1.0.0/20"
 services_cidr = "10.2.0.0/26"
 
+# Bastion
+zone                = "us-central1-a"
+bastion_machine_type = "e2-medium"
+allowed_ssh_cidrs   = ["0.0.0.0/0"]

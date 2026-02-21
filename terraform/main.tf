@@ -25,3 +25,28 @@ module "iam" {
 
   depends_on = [module.apis]
 }
+
+# Bastion VM for SSH access to private resources
+module "bastion" {
+  source            = "./modules/bastion"
+  project_id        = var.project_id
+  region            = var.region
+  zone              = var.zone
+  environment       = var.environment
+  network           = module.networking.vpc_id
+  subnet            = module.networking.subnet_name
+  machine_type      = var.bastion_machine_type
+  allowed_ssh_cidrs = var.allowed_ssh_cidrs
+
+  depends_on = [module.networking]
+}
+
+# GCS bucket for Terraform remote state
+module "storage" {
+  source      = "./modules/storage"
+  project_id  = var.project_id
+  region      = var.region
+  environment = var.environment
+
+  depends_on = [module.apis]
+}

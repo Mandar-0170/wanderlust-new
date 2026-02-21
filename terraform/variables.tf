@@ -14,7 +14,24 @@ variable "environment" {
   type        = string
 }
 
-# -- Networking (uncomment when subnet ranges are available)
+# -- Bastion
+variable "zone" {
+  description = "GCP zone for the bastion VM"
+  type        = string
+}
+
+variable "bastion_machine_type" {
+  description = "Machine type for the bastion VM"
+  type        = string
+  default     = "e2-micro"
+}
+
+variable "allowed_ssh_cidrs" {
+  description = "List of CIDRs allowed to SSH into the bastion"
+  type        = list(string)
+}
+
+# -- Networking
 variable "subnet_cidr" {
   description = "CIDR range for the GKE subnet (node IPs)"
   type        = string
