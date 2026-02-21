@@ -8,3 +8,11 @@ coverage/
 backend/dist
 package-lock.json
 .env
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform/terraform.tfvars
+crash.log
