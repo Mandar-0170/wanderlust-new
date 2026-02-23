@@ -3,6 +3,7 @@ resource "google_container_cluster" "primary" {
   name     = "wanderlust-${var.environment}-cluster"
   project  = var.project_id
   location = var.region
+  deletion_protection = false
 
   # We manage the node pool separately
   remove_default_node_pool = true
