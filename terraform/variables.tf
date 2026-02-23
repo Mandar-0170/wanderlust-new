@@ -46,3 +46,19 @@ variable "services_cidr" {
   description = "Secondary CIDR range for GKE services"
   type        = string
 }
+
+# -- GKE
+variable "gke_node_count" {
+  description = "Number of nodes in the GKE node pool"
+  type        = number
+}
+
+variable "gke_machine_type" {
+  description = "Machine type for GKE nodes"
+  type        = string
+}
+
+variable "gke_disk_size_gb" {
+  description = "Disk size in GB for each GKE node"
+  type        = number
+}

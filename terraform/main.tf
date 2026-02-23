@@ -60,3 +60,21 @@ module "artifact_registry" {
 
   depends_on = [module.apis]
 }
+
+# GKE cluster and node pool
+module "gke" {
+  source                = "./modules/gke"
+  project_id            = var.project_id
+  region                = var.region
+  environment           = var.environment
+  vpc_name              = module.networking.vpc_name
+  subnet_name           = module.networking.subnet_name
+  pods_range_name       = module.networking.pods_range_name
+  services_range_name   = module.networking.services_range_name
+  service_account_email = module.iam.gke_service_account_email
+  node_count            = var.gke_node_count
+  machine_type          = var.gke_machine_type
+  disk_size_gb          = var.gke_disk_size_gb
+
+  depends_on = [module.networking, module.iam]
+}

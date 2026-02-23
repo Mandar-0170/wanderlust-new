@@ -12,3 +12,8 @@ services_cidr = "10.2.0.0/26"
 zone                = "us-central1-a"
 bastion_machine_type = "e2-medium"
 allowed_ssh_cidrs   = ["0.0.0.0/0"]
+
+# GKE
+gke_node_count   = 3
+gke_machine_type = "e2-medium"
+gke_disk_size_gb = 50
