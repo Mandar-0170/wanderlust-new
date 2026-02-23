@@ -50,3 +50,13 @@ module "storage" {
 
   depends_on = [module.apis]
 }
+
+# Docker repository for container images
+module "artifact_registry" {
+  source      = "./modules/artifact-registry"
+  project_id  = var.project_id
+  region      = var.region
+  environment = var.environment
+
+  depends_on = [module.apis]
+}
