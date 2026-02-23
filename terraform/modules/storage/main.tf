@@ -10,5 +10,5 @@ resource "google_storage_bucket" "tfstate" {
 
   uniform_bucket_level_access = true
 
-  force_destroy = false
+  force_destroy = true
 }
