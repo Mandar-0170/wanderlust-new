@@ -17,3 +17,6 @@ allowed_ssh_cidrs   = ["0.0.0.0/0"]
 gke_node_count   = 3
 gke_machine_type = "e2-medium"
 gke_disk_size_gb = 50
+
+
+#edit
