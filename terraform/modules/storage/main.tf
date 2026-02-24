@@ -1,6 +1,6 @@
 # GCS bucket for Terraform remote state
 resource "google_storage_bucket" "tfstate" {
-  name     = "wanderlust-${var.environment}-tfstate"
+  name     = "bucket-${var.client_name}-${var.environment}-tfstate"
   project  = var.project_id
   location = var.region
 

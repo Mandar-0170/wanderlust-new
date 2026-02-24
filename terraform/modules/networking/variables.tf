@@ -13,6 +13,11 @@ variable "environment" {
   type        = string
 }
 
+variable "client_name" {
+  description = "Client name used in the resource naming convention (ResourceName-Client-Environment-Description)"
+  type        = string
+}
+
 variable "subnet_cidr" {
   description = "Primary CIDR for the GKE - subnet where nodes live"
   type        = string

@@ -7,7 +7,7 @@
 
 # terraform {
 #   backend "gcs" {
-#     bucket = "wanderlust-dev-tfstate"
+#     bucket = "bucket-rd-dev-tfstate"
 #     prefix = "terraform/state"
 #   }
 # }

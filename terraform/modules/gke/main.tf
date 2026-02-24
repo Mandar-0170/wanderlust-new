@@ -1,8 +1,9 @@
 # GKE cluster
 resource "google_container_cluster" "primary" {
-  name     = "wanderlust-${var.environment}-cluster"
-  project  = var.project_id
-  location = var.zone
+  name                = "gke-${var.client_name}-${var.environment}-cluster"
+  project             = var.project_id
+  location            = var.zone
+  deletion_protection = false
 
   # We manage the node pool separately
   remove_default_node_pool = true
@@ -32,7 +33,7 @@ resource "google_container_cluster" "primary" {
 
 # Separately managed node pool
 resource "google_container_node_pool" "primary_nodes" {
-  name       = "wanderlust-${var.environment}-nodes"
+  name       = "nodepool-${var.client_name}-${var.environment}-primary"
   project    = var.project_id
   location   = var.zone
   cluster    = google_container_cluster.primary.name

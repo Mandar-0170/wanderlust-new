@@ -1,6 +1,6 @@
 # Bastion VM
 resource "google_compute_instance" "bastion" {
-  name         = "wanderlust-${var.environment}-bastion"
+  name         = "vm-${var.client_name}-${var.environment}-bastion"
   machine_type = var.machine_type
   zone         = var.zone
   project      = var.project_id
@@ -29,7 +29,7 @@ resource "google_compute_instance" "bastion" {
 
 # Allow SSH to bastion from specified CIDRs
 resource "google_compute_firewall" "bastion_ssh" {
-  name    = "wanderlust-${var.environment}-allow-ssh-bastion"
+  name    = "fw-${var.client_name}-${var.environment}-ssh"
   project = var.project_id
   network = var.network
 

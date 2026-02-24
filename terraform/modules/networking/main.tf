@@ -1,18 +1,18 @@
 # VPC
 resource "google_compute_network" "vpc" {
-  name                    = "wanderlust-${var.environment}-vpc"
+  name                    = "vpc-${var.client_name}-${var.environment}-network"
   project                 = var.project_id
   auto_create_subnetworks = false
 }
 
 # Subnet with secondary ranges for pods and services
 resource "google_compute_subnetwork" "subnet" {
-  name          = "wanderlust-${var.environment}-subnet"
+  name          = "subnet-${var.client_name}-${var.environment}-primary"
   project       = var.project_id
   region        = var.region
   network       = google_compute_network.vpc.id
   ip_cidr_range = var.subnet_cidr
-  
+
   secondary_ip_range {
     range_name    = "pods"
     ip_cidr_range = var.pods_cidr
@@ -26,7 +26,7 @@ resource "google_compute_subnetwork" "subnet" {
 
 # Firewall — allow internal traffic between nodes
 resource "google_compute_firewall" "internal" {
-  name    = "wanderlust-${var.environment}-allow-internal"
+  name    = "fw-${var.client_name}-${var.environment}-internal"
   project = var.project_id
   network = google_compute_network.vpc.id
 

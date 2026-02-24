@@ -10,6 +10,7 @@ module "networking" {
   project_id    = var.project_id
   region        = var.region
   environment   = var.environment
+  client_name   = var.client_name
   subnet_cidr   = var.subnet_cidr
   pods_cidr     = var.pods_cidr
   services_cidr = var.services_cidr
@@ -22,6 +23,7 @@ module "iam" {
   source      = "./modules/iam"
   project_id  = var.project_id
   environment = var.environment
+  client_name = var.client_name
 
   depends_on = [module.apis]
 }
@@ -33,6 +35,7 @@ module "bastion" {
   region            = var.region
   zone              = var.zone
   environment       = var.environment
+  client_name       = var.client_name
   network           = module.networking.vpc_id
   subnet            = module.networking.subnet_name
   machine_type      = var.bastion_machine_type
@@ -47,6 +50,7 @@ module "storage" {
   project_id  = var.project_id
   region      = var.region
   environment = var.environment
+  client_name = var.client_name
 
   depends_on = [module.apis]
 }
@@ -57,6 +61,7 @@ module "artifact_registry" {
   project_id  = var.project_id
   region      = var.region
   environment = var.environment
+  client_name = var.client_name
 
   depends_on = [module.apis]
 }
@@ -68,6 +73,7 @@ module "gke" {
   region                = var.region
   zone                  = var.zone
   environment           = var.environment
+  client_name           = var.client_name
   vpc_name              = module.networking.vpc_name
   subnet_name           = module.networking.subnet_name
   pods_range_name       = module.networking.pods_range_name

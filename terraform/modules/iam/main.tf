@@ -1,7 +1,7 @@
 # Service account for GKE nodes
 resource "google_service_account" "gke_nodes" {
-  account_id   = "wanderlust-${var.environment}-gke-sa"
-  display_name = "Wanderlust ${var.environment} GKE Node Service Account"
+  account_id   = "sa-${var.client_name}-${var.environment}-gke"
+  display_name = "sa-${var.client_name}-${var.environment}-gke"
   project      = var.project_id
 }
 

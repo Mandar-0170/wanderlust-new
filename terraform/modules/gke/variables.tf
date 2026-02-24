@@ -18,6 +18,11 @@ variable "environment" {
   type        = string
 }
 
+variable "client_name" {
+  description = "Client name used in the resource naming convention (ResourceName-Client-Environment-Description)"
+  type        = string
+}
+
 variable "vpc_name" {
   description = "VPC network name from networking module"
   type        = string

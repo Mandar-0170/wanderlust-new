@@ -3,10 +3,14 @@ variable "project_id" {
   type        = string
 }
 
+variable "client_name" {
+  description = "Client name used in the resource naming convention (ResourceName-Client-Environment-Description)"
+  type        = string
+}
+
 variable "region" {
   description = "The GCP region for all regional resources"
   type        = string
-  default     = "us-central1"
 }
 
 variable "environment" {
@@ -23,7 +27,6 @@ variable "zone" {
 variable "bastion_machine_type" {
   description = "Machine type for the bastion VM"
   type        = string
-  default     = "e2-micro"
 }
 
 variable "allowed_ssh_cidrs" {
