@@ -4,7 +4,7 @@ region      = "us-central1"
 environment = "dev"                                  
 
 # Networking
-subnet_cidr   = "10.0.0.0/28"
+subnet_cidr   = "10.0.0.0/20"
 pods_cidr     = "10.1.0.0/20"
 services_cidr = "10.2.0.0/26"
 
