@@ -1,7 +1,7 @@
 name: Test GCP Auth
 
 on:
-  push
+  [push]
 
 jobs:
   test-auth:
