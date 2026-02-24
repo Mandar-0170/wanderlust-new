@@ -66,6 +66,7 @@ module "gke" {
   source                = "./modules/gke"
   project_id            = var.project_id
   region                = var.region
+  zone                  = var.zone
   environment           = var.environment
   vpc_name              = module.networking.vpc_name
   subnet_name           = module.networking.subnet_name

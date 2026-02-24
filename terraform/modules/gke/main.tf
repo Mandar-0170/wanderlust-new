@@ -2,7 +2,7 @@
 resource "google_container_cluster" "primary" {
   name     = "wanderlust-${var.environment}-cluster"
   project  = var.project_id
-  location = var.region
+  location = var.zone
 
   # We manage the node pool separately
   remove_default_node_pool = true
@@ -34,7 +34,7 @@ resource "google_container_cluster" "primary" {
 resource "google_container_node_pool" "primary_nodes" {
   name       = "wanderlust-${var.environment}-nodes"
   project    = var.project_id
-  location   = var.region
+  location   = var.zone
   cluster    = google_container_cluster.primary.name
   node_count = var.node_count
 

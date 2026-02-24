@@ -8,6 +8,11 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "GCP zone for the zonal cluster"
+  type        = string
+}
+
 variable "environment" {
   description = "Environment label (e.g. dev, staging, prod)"
   type        = string
