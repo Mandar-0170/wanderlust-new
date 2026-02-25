@@ -7,9 +7,6 @@ jobs:
     name: Terraform Init, Plan and Apply (Dev)
     runs-on: ubuntu-latest
 
-    # HARD STOP: run ONLY on dev branch
-    if: github.ref == 'refs/heads/dev'
-
     permissions:
       id-token: write     # REQUIRED for Workload Identity Federation
       contents: read
