@@ -2,7 +2,7 @@
 project_id  = "project-75e4f40b-a1a0-487f-b1d"
 region      = "us-central1"
 environment = "dev"
-client_name = "RD"
+client_name = "rd"
 
 # Networking
 subnet_cidr   = "10.0.0.0/20"
