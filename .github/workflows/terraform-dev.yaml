@@ -1,7 +1,7 @@
 name: Terraform Dev Deploy
 
 on:
-  workflow_dispatch:
+  workflow_dispatch
 
 jobs:
   terraform:
