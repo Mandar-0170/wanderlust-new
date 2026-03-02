@@ -44,16 +44,9 @@ module "bastion" {
   depends_on = [module.networking]
 }
 
-# GCS bucket for Terraform remote state
-module "storage" {
-  source      = "./modules/storage"
-  project_id  = var.project_id
-  region      = var.region
-  environment = var.environment
-  client_name = var.client_name
-
-  depends_on = [module.apis]
-}
+# NOTE: The GCS state bucket is now created by the bootstrap module
+# (terraform/bootstrap/). Do NOT create it here to avoid conflicts.
+# If you need additional GCS buckets (e.g. for app data), add them here.
 
 # Docker repository for container images
 module "artifact_registry" {

@@ -1,9 +1,11 @@
 # Terraform remote state backend (GCS bucket)
 #
 # Workflow:
-#   1. First apply with this commented out (creates the bucket via storage module)
-#   2. Uncomment the block below
-#   3. Run `terraform init` to migrate state to the bucket
+#   1. Run the bootstrap module first:  cd bootstrap && terraform init && terraform apply
+#   2. Copy the bucket name from:       terraform output state_bucket_name
+#   3. Uncomment the block below and paste the bucket name
+#   4. Run `terraform init` here to migrate local state to GCS
+#   5. Terraform will prompt: "Do you want to copy existing state?" — answer yes
 
 # terraform {
 #   backend "gcs" {
