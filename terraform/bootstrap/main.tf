@@ -2,16 +2,11 @@
 # BOOTSTRAP MODULE
 # ============================================================================
 # This module is run ONCE by a human admin to create:
-#   1. GCS bucket for Terraform remote state
-#   2. Service account for GitHub Actions
-#   3. Workload Identity Federation (Pool + Provider) for keyless auth
-#   4. IAM roles so GitHub Actions SA can manage all GCP infra
-#
-# Prerequisites:
-#   Enable required APIs before running (bootstrap runs BEFORE the apis module):
-#     gcloud services enable iam.googleapis.com iamcredentials.googleapis.com \
-#       sts.googleapis.com storage.googleapis.com cloudresourcemanager.googleapis.com \
-#       --project=<PROJECT_ID>
+#   1. Required GCP APIs
+#   2. GCS bucket for Terraform remote state
+#   3. Service account for GitHub Actions
+#   4. Workload Identity Federation (Pool + Provider) for keyless auth
+#   5. IAM roles so GitHub Actions SA can manage all GCP infra
 #
 # Usage:
 #   cd terraform/bootstrap
@@ -41,7 +36,25 @@ locals {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 1. GCS BUCKET FOR TERRAFORM STATE
+# 1. ENABLE REQUIRED APIs
+# ──────────────────────────────────────────────────────────────────────────────
+
+resource "google_project_service" "bootstrap_apis" {
+  for_each = toset([
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "sts.googleapis.com",
+    "storage.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+  ])
+
+  project            = var.project_id
+  service            = each.value
+  disable_on_destroy = false
+}
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 2. GCS BUCKET FOR TERRAFORM STATE
 # ──────────────────────────────────────────────────────────────────────────────
 
 resource "google_storage_bucket" "tfstate" {
@@ -55,16 +68,20 @@ resource "google_storage_bucket" "tfstate" {
 
   uniform_bucket_level_access = true
   force_destroy               = false # Protect state from accidental deletion
+
+  depends_on = [google_project_service.bootstrap_apis]
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 2. SERVICE ACCOUNT FOR GITHUB ACTIONS
+# 3. SERVICE ACCOUNT FOR GITHUB ACTIONS
 # ──────────────────────────────────────────────────────────────────────────────
 
 resource "google_service_account" "github_actions" {
   account_id   = local.sa_account_id
   display_name = "GitHub Actions CI/CD (${var.environment})"
   project      = var.project_id
+
+  depends_on = [google_project_service.bootstrap_apis]
 }
 
 resource "google_project_iam_member" "github_actions_roles" {
@@ -76,7 +93,7 @@ resource "google_project_iam_member" "github_actions_roles" {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 3. WORKLOAD IDENTITY FEDERATION (Keyless auth for GitHub Actions)
+# 4. WORKLOAD IDENTITY FEDERATION (Keyless auth for GitHub Actions)
 # ──────────────────────────────────────────────────────────────────────────────
 
 # Pool — a container for external identity providers
@@ -85,6 +102,8 @@ resource "google_iam_workload_identity_pool" "github" {
   workload_identity_pool_id = local.pool_id
   display_name              = "GitHub Actions Pool (${var.environment})"
   description               = "Workload Identity Pool for GitHub Actions CI/CD"
+
+  depends_on = [google_project_service.bootstrap_apis]
 }
 
 # Provider — configures GitHub's OIDC as the identity source

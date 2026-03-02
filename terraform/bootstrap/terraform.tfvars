@@ -8,9 +8,9 @@
 #
 # ──────────────────────────────────────────────────────────────────────────────
 
-# Get this via: gcloud projects describe <PROJECT_ID> --format='value(projectNumber)'
-project_number = ""  # <-- FILL THIS IN
+
+project_number = "917443109321"
 
 # GitHub details (for Workload Identity Federation)
-github_org  = ""  # <-- FILL THIS IN (e.g. "your-username" or "your-org")
-github_repo = ""  # <-- FILL THIS IN (e.g. "wanderlust")
+github_org  = "Mandar-0170"
+github_repo = "wanderlust-new"

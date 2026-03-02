@@ -16,11 +16,12 @@ jobs:
         uses: actions/checkout@v4
 
       # Authenticate to Google Cloud using Workload Identity Federation
+      # These values come from: cd terraform/bootstrap && terraform output
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/85044328168/locations/global/workloadIdentityPools/github-pool-v2/providers/github-provider
-          service_account: terraform-ci@project-75e4f40b-a1a0-487f-b1d.iam.gserviceaccount.com
+          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
+          service_account: sa-rd-dev-ghactions@project-75e4f40b-a1a0-487f-b1d.iam.gserviceaccount.com
 
       # Install Terraform
       - name: Setup Terraform

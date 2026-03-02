@@ -7,9 +7,9 @@
 #   4. Run `terraform init` here to migrate local state to GCS
 #   5. Terraform will prompt: "Do you want to copy existing state?" — answer yes
 
-# terraform {
-#   backend "gcs" {
-#     bucket = "bucket-rd-dev-tfstate"
-#     prefix = "terraform/state"
-#   }
-# }
+terraform {
+  backend "gcs" {
+    bucket = "bucket-rd-dev-tfstate"
+    prefix = "terraform/state"
+  }
+}

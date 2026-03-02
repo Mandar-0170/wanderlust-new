@@ -1,5 +1,5 @@
 # General 
-project_id  = "project-75e4f40b-a1a0-487f-b1d"
+project_id  = "playground-488307"
 region      = "us-central1"
 environment = "dev"
 client_name = "rd"
