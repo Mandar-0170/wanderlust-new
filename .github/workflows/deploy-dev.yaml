@@ -120,10 +120,10 @@ jobs:
         run: kubectl apply -f k8s/backend/redis.yaml
 
       - name: Wait for MongoDB to be ready
-        run: kubectl wait --for=condition=ready pod -l component=mongodb -n wanderlust --timeout=120s
+        run: kubectl rollout status deployment/mongodb -n wanderlust --timeout=120s
 
       - name: Wait for Redis to be ready
-        run: kubectl wait --for=condition=ready pod -l component=redis -n wanderlust --timeout=60s
+        run: kubectl rollout status deployment/redis -n wanderlust --timeout=60s
 
       # ─── Deploy App (with current commit SHA as image tag) ─
       - name: Deploy backend
