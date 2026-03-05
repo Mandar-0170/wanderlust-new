@@ -1,0 +1,78 @@
+# ──────────────────────────────────────────────
+# Frontend — Deployment + ClusterIP Service
+# ──────────────────────────────────────────────
+# Image is pulled from Artifact Registry:
+#   us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-frontend:<tag>
+#
+# Build the image with VITE_API_PATH="" (empty) so the browser
+# sends API calls to the same origin → Ingress routes /api to backend.
+#
+# Example build command:
+#   docker build --build-arg VITE_API_PATH="" \
+#     -t us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-frontend:v1 \
+#     ./frontend
+# ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wanderlust
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: wanderlust
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-frontend:v1
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: wanderlust
+    component: frontend
+  ports:
+    - port: 80
+      targetPort: 80

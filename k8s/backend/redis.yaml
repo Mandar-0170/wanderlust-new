@@ -1,0 +1,69 @@
+# ──────────────────────────────────────────────
+# Redis — Deployment + ClusterIP Service
+# ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wanderlust
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: wanderlust
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: wanderlust
+    component: redis
+  ports:
+    - port: 6379
+      targetPort: 6379

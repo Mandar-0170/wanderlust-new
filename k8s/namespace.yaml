@@ -1,0 +1,9 @@
+# ──────────────────────────────────────────────
+# Namespace — isolates all Wanderlust resources
+# ──────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wanderlust
+  labels:
+    app: wanderlust
