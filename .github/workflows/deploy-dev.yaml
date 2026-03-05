@@ -17,7 +17,8 @@
 
 name: Deploy App to GKE (Dev)
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch
 
 env:
   PROJECT_ID: playground-488307
