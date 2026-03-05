@@ -1,0 +1,169 @@
+# ──────────────────────────────────────────────────────────
+# Wanderlust — Build, Push & Deploy to GKE
+# ──────────────────────────────────────────────────────────
+# Trigger: Manual (workflow_dispatch)
+#
+# What it does:
+#   1. Authenticates to GCP via Workload Identity Federation
+#   2. Builds frontend & backend Docker images
+#   3. Pushes them to Artifact Registry
+#   4. Applies all K8s manifests to GKE
+#   5. Prints the Ingress IP for verification
+#
+# Required GitHub Secrets:
+#   JWT_SECRET           — JWT signing key
+#   GOOGLE_CLIENT_SECRET — Google OAuth client secret
+# ──────────────────────────────────────────────────────────
+
+name: Deploy App to GKE (Dev)
+
+on: workflow_dispatch
+
+env:
+  PROJECT_ID: playground-488307
+  REGION: us-central1
+  ZONE: us-central1-a
+  CLUSTER_NAME: gke-rd-dev-cluster
+  REGISTRY: us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker
+  BACKEND_IMAGE: wanderlust-backend
+  FRONTEND_IMAGE: wanderlust-frontend
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  deploy:
+    name: Build, Push & Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write     # REQUIRED for Workload Identity Federation
+      contents: read
+
+    steps:
+      # ─── Checkout ───────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ─── Authenticate to GCP ────────────────────
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
+          service_account: sa-rd-dev-ghactions@playground-488307.iam.gserviceaccount.com
+
+      # ─── Setup gcloud CLI ──────────────────────
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      # ─── Configure Docker for Artifact Registry ─
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      # ─── Build & Push Backend ───────────────────
+      - name: Build backend image
+        run: |
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }} \
+            -t ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest \
+            ./backend
+
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
+
+      # ─── Build & Push Frontend ──────────────────
+      - name: Build frontend image
+        run: |
+          docker build \
+            --build-arg VITE_API_PATH="" \
+            -t ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }} \
+            -t ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest \
+            ./frontend
+
+      - name: Push frontend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
+
+      # ─── Get GKE Credentials ───────────────────
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.ZONE }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      # ─── Create Namespace ──────────────────────
+      - name: Create namespace
+        run: kubectl apply -f k8s/namespace.yaml
+
+      # ─── Create Secret from GitHub Secrets ─────
+      # Instead of applying secret.yaml (which has hardcoded values),
+      # we create the secret from GitHub Secrets for better security.
+      - name: Create Kubernetes Secret
+        run: |
+          kubectl create secret generic wanderlust-secret \
+            --namespace=wanderlust \
+            --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # ─── Apply ConfigMap ───────────────────────
+      - name: Apply ConfigMap
+        run: kubectl apply -f k8s/backend/configmap.yaml
+
+      # ─── Deploy Database Layer ─────────────────
+      - name: Deploy MongoDB
+        run: kubectl apply -f k8s/backend/mongodb.yaml
+
+      - name: Deploy Redis
+        run: kubectl apply -f k8s/backend/redis.yaml
+
+      - name: Wait for MongoDB to be ready
+        run: kubectl wait --for=condition=ready pod -l component=mongodb -n wanderlust --timeout=120s
+
+      - name: Wait for Redis to be ready
+        run: kubectl wait --for=condition=ready pod -l component=redis -n wanderlust --timeout=60s
+
+      # ─── Deploy App (with current commit SHA as image tag) ─
+      - name: Deploy backend
+        run: |
+          sed -i "s|wanderlust-backend:v1|wanderlust-backend:${{ env.IMAGE_TAG }}|g" k8s/backend/deployment.yaml
+          kubectl apply -f k8s/backend/deployment.yaml
+
+      - name: Deploy frontend
+        run: |
+          sed -i "s|wanderlust-frontend:v1|wanderlust-frontend:${{ env.IMAGE_TAG }}|g" k8s/frontend/deployment.yaml
+          kubectl apply -f k8s/frontend/deployment.yaml
+
+      # ─── Deploy Ingress ────────────────────────
+      - name: Deploy Ingress
+        run: kubectl apply -f k8s/ingress.yaml
+
+      # ─── Wait for rollout ──────────────────────
+      - name: Wait for backend rollout
+        run: kubectl rollout status deployment/backend -n wanderlust --timeout=120s
+
+      - name: Wait for frontend rollout
+        run: kubectl rollout status deployment/frontend -n wanderlust --timeout=120s
+
+      # ─── Print Status ──────────────────────────
+      - name: Print deployment status
+        run: |
+          echo "============================================"
+          echo "  Deployment Complete!"
+          echo "============================================"
+          echo ""
+          kubectl get all -n wanderlust
+          echo ""
+          echo "── Ingress (may take 2-5 min for IP) ──"
+          kubectl get ingress -n wanderlust
+          echo ""
+          echo "============================================"
+          echo "  NEXT STEPS:"
+          echo "  1. Wait for Ingress IP:  kubectl get ingress -n wanderlust --watch"
+          echo "  2. Update ConfigMap:     kubectl edit configmap wanderlust-config -n wanderlust"
+          echo "     Set FRONTEND_URL and BACKEND_URL to http://<INGRESS_IP>"
+          echo "  3. Restart backend:      kubectl rollout restart deployment backend -n wanderlust"
+          echo "  4. Update Google OAuth redirect URI to: http://<INGRESS_IP>/api/auth/google/callback"
+          echo "============================================"

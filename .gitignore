@@ -9,6 +9,9 @@ backend/dist
 package-lock.json
 .env
 
+# Kubernetes secrets (sensitive — injected via CI/CD from GitHub Secrets)
+k8s/backend/secret.yaml
+
 # Terraform
 *.tfstate
 *.tfstate.*
