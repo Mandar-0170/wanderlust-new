@@ -8,9 +8,7 @@ terraform {
     }
   }
 
-  # Bootstrap uses LOCAL state — this is intentional.
-  # This module creates the GCS bucket that all other modules use for remote state.
-  # You cannot use a remote backend for the thing that creates the remote backend.
+
 }
 
 provider "google" {

@@ -42,3 +42,8 @@ variable "allowed_ssh_cidrs" {
   description = "List of CIDRs allowed to SSH into the bastion"
   type        = list(string)
 }
+
+variable "service_account_email" {
+  description = "Service account email to attach to the bastion VM"
+  type        = string
+}

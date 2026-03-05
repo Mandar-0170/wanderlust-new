@@ -1,8 +1,3 @@
-# ──────────────────────────────────────────────────────────────────────────────
-# Outputs — you will need these values for:
-#   - backend.tf (bucket name)
-#   - GitHub Actions workflow YAML (SA email + WIF provider)
-# ──────────────────────────────────────────────────────────────────────────────
 
 output "state_bucket_name" {
   description = "GCS bucket name for Terraform remote state — use in backend.tf"

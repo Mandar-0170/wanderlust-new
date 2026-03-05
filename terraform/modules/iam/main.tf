@@ -21,3 +21,17 @@ resource "google_project_iam_member" "gke_node_roles" {
   role    = each.value
   member  = "serviceAccount:${google_service_account.gke_nodes.email}"
 }
+
+# Service account for the bastion VM
+resource "google_service_account" "bastion" {
+  account_id   = "sa-${var.client_name}-${var.environment}-bastion"
+  display_name = "sa-${var.client_name}-${var.environment}-bastion"
+  project      = var.project_id
+}
+
+# Allow bastion to manage workloads on the GKE cluster
+resource "google_project_iam_member" "bastion_gke_access" {
+  project = var.project_id
+  role    = "roles/container.developer"
+  member  = "serviceAccount:${google_service_account.bastion.email}"
+}

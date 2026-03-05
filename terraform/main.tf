@@ -30,18 +30,19 @@ module "iam" {
 
 # Bastion VM for SSH access to private resources
 module "bastion" {
-  source            = "./modules/bastion"
-  project_id        = var.project_id
-  region            = var.region
-  zone              = var.zone
-  environment       = var.environment
-  client_name       = var.client_name
-  network           = module.networking.vpc_id
-  subnet            = module.networking.subnet_name
-  machine_type      = var.bastion_machine_type
-  allowed_ssh_cidrs = var.allowed_ssh_cidrs
+  source                = "./modules/bastion"
+  project_id            = var.project_id
+  region                = var.region
+  zone                  = var.zone
+  environment           = var.environment
+  client_name           = var.client_name
+  network               = module.networking.vpc_id
+  subnet                = module.networking.subnet_name
+  machine_type          = var.bastion_machine_type
+  allowed_ssh_cidrs     = var.allowed_ssh_cidrs
+  service_account_email = module.iam.bastion_service_account_email
 
-  depends_on = [module.networking]
+  depends_on = [module.networking, module.iam]
 }
 
 # NOTE: The GCS state bucket is now created by the bootstrap module
