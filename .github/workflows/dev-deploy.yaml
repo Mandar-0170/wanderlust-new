@@ -1,4 +1,4 @@
-name: Deploy App to GKE (Dev)
+name: Wanderlust app deployment workdflow (Dev)
 
 on: workflow_dispatch
 
