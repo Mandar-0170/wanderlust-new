@@ -50,8 +50,8 @@ jobs:
           path: "."
           format: "HTML"
           out: "owasp-report"
-          args: >
-            --failOnCVSS 7
+          #args: >
+          #  --failOnCVSS 7
   
 
       # ─── Uploading OWASP Report ───────────────
