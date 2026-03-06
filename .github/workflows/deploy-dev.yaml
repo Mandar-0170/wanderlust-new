@@ -42,6 +42,12 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
+      # ─── Sonarqube ───────────────
+      - uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       # ─── OWASP Dependency Check ───────────────
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
@@ -53,14 +59,13 @@ jobs:
           #args: >
           #  --failOnCVSS 7
   
-
       # ─── Uploading OWASP Report ───────────────
       - name: Upload OWASP Report
         uses: actions/upload-artifact@v4
         with:
           name: owasp-security-report
           path: owasp-report
-
+      
       # ─── Authenticate to GCP ────────────────────
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
