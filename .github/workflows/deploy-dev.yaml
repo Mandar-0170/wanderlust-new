@@ -49,7 +49,6 @@ jobs:
           project: "wanderlust-app"
           path: "."
           format: "HTML"
-          format: "SARIF"
           out: "owasp-report"
           args: >
             --failOnCVSS 7
