@@ -1,20 +1,3 @@
-# ──────────────────────────────────────────────────────────
-# Wanderlust — Build, Push & Deploy to GKE
-# ──────────────────────────────────────────────────────────
-# Trigger: Manual (workflow_dispatch)
-#
-# What it does:
-#   1. Authenticates to GCP via Workload Identity Federation
-#   2. Builds frontend & backend Docker images
-#   3. Pushes them to Artifact Registry
-#   4. Applies all K8s manifests to GKE
-#   5. Prints the Ingress IP for verification
-#
-# Required GitHub Secrets:
-#   JWT_SECRET           — JWT signing key
-#   GOOGLE_CLIENT_SECRET — Google OAuth client secret
-# ──────────────────────────────────────────────────────────
-
 name: Deploy App to GKE (Dev)
 
 on: 
