@@ -26,6 +26,41 @@ jobs:
       # ─── Checkout ───────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      # ─── Setup Node ───────────────────────────
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      # ─── Install Backend Dependencies ─────────
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      # ─── Install Frontend Dependencies ────────
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      # ─── OWASP Dependency Check ───────────────
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "wanderlust-app"
+          path: "."
+          format: "HTML,SARIF"
+          out: "owasp-report"
+          args: >
+            --failOnCVSS 7
+  
+
+      # ─── Uploading OWASP Report ───────────────
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-security-report
+          path: owasp-report
 
       # ─── Authenticate to GCP ────────────────────
       - name: Authenticate to Google Cloud
