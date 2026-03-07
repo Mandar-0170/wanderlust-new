@@ -128,10 +128,6 @@ jobs:
           name: backend-trivy-reports
           path: backend-trivy-report.json
 
-      - name: Push backend image
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
-          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
 
       # ─── Build Frontend ──────────────────
       - name: Build frontend image
@@ -159,6 +155,11 @@ jobs:
           name: frontend-trivy-reports
           path: frontend-trivy-report.json
 
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
+          
       - name: Push frontend image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
