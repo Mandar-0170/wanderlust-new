@@ -97,12 +97,12 @@ jobs:
             -t ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest \
             ./backend
 
-      # Install Trivy
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.3
-        with:
-          version: v0.62.0
-          cache: true
+      # ─── Install Trivy ─────────────────────────
+      - name: Install Trivy
+        run: |
+          TRIVY_VERSION="0.62.0"
+          curl -sfL https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz | tar -xzf - -C /usr/local/bin trivy
+          trivy --version
           
       # ─── Cache Trivy Database ───────────────────
       - name: Cache Trivy DB
