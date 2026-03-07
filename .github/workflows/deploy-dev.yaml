@@ -43,10 +43,18 @@ jobs:
         run: npm install
 
       # ─── Sonarqube ───────────────
-      - uses: SonarSource/sonarqube-scan-action@v6
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      # # ─── Sonarqube code quality gate ───────────────
+      # - name: SonarQube Quality Gate
+      #   uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # ─── OWASP Dependency Check ───────────────
       - name: Run OWASP Dependency Check
@@ -81,7 +89,7 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      # ─── Build & Push Backend ───────────────────
+      # ─── Build Backend ───────────────────
       - name: Build backend image
         run: |
           docker build \
@@ -89,12 +97,36 @@ jobs:
             -t ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest \
             ./backend
 
+      # ─── Cache Trivy Database ───────────────────
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}
+
+      # ─── Trivy Scan Backend ─────────────────────
+      - name: Scan backend image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
+          format: 'json'
+          output: 'backend-trivy-report.json'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '0' #1 to fail on vulnerabilities, but we want to allow them for now and just report
+
+      - name: Upload Backend Trivy Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-trivy-reports
+          path: backend-trivy-report.json
+
       - name: Push backend image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
 
-      # ─── Build & Push Frontend ──────────────────
+      # ─── Build Frontend ──────────────────
       - name: Build frontend image
         run: |
           docker build \
@@ -102,6 +134,23 @@ jobs:
             -t ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }} \
             -t ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest \
             ./frontend
+
+      # ─── Trivy Scan Frontend ────────────────────
+      - name: Scan frontend image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
+          format: 'json'
+          output: 'frontend-trivy-report.json'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '0' #1 to fail on vulnerabilities, but we want to allow them for now and just report
+
+      - name: Upload Frontend Trivy Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-trivy-reports
+          path: frontend-trivy-report.json
 
       - name: Push frontend image
         run: |
