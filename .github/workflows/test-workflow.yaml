@@ -98,7 +98,7 @@ jobs:
             ./backend
 
       # ─── Install Trivy ─────────────────────────
-      - name: Manual Trivy Setup
+      - name: Trivy Setup
         uses: aquasecurity/setup-trivy@v0.2.0
         with:
           cache: true
