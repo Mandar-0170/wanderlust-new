@@ -2,8 +2,11 @@ name: Terraform Dev Deploy
 
 on: workflow_dispatch
 
+env:
+  TF_VERSION: "1.6.6"
+
 jobs:
-  
+
   plan:
     name: Terraform Plan (Dev)
     runs-on: ubuntu-latest
@@ -20,19 +23,19 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
-          service_account: sa-rd-dev-ghactions@playground-488307.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       # Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6
+          terraform_version: ${{ env.TF_VERSION }}
 
       # Terraform Init
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init -input=false
+        run: terraform init -input=false -backend-config=backend.hcl
 
       # Terraform Plan — save to file for the apply job
       - name: Terraform Plan
@@ -47,10 +50,10 @@ jobs:
           path: terraform/tfplan
           retention-days: 1
 
-  
+
   # Job 2: Apply — requires manual approval via
   #         GitHub Environment protection rule
-  
+
   apply:
     name: Terraform Apply (Dev)
     needs: plan
@@ -69,19 +72,19 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
-          service_account: sa-rd-dev-ghactions@playground-488307.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       # Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6
+          terraform_version: ${{ env.TF_VERSION }}
 
       # Terraform Init
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init -input=false
+        run: terraform init -input=false -backend-config=backend.hcl
 
       # Download the saved plan from the plan job
       - name: Download Terraform Plan

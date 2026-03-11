@@ -11,7 +11,7 @@ resource "google_container_cluster" "primary" {
 
   # Config for the temporary default pool (created then removed)
   node_config {
-    disk_type = "pd-standard"
+    disk_type = var.disk_type
   }
 
   network    = var.vpc_name
@@ -27,7 +27,7 @@ resource "google_container_cluster" "primary" {
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = "172.16.0.0/28"
+    master_ipv4_cidr_block  = var.master_cidr
   }
 }
 
@@ -42,7 +42,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_config {
     machine_type    = var.machine_type
     disk_size_gb    = var.disk_size_gb
-    disk_type       = "pd-standard"
+    disk_type       = var.disk_type
     service_account = var.service_account_email
 
     oauth_scopes = [

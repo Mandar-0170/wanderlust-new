@@ -65,3 +65,23 @@ variable "gke_disk_size_gb" {
   description = "Disk size in GB for each GKE node"
   type        = number
 }
+
+variable "gke_master_cidr" {
+  description = "CIDR block for the GKE master (private cluster control plane)"
+  type        = string
+}
+
+variable "gke_disk_type" {
+  description = "Disk type for GKE nodes (e.g. pd-standard, pd-ssd)"
+  type        = string
+}
+
+variable "bastion_image" {
+  description = "Boot disk image for the bastion VM"
+  type        = string
+}
+
+variable "bastion_disk_size_gb" {
+  description = "Boot disk size in GB for the bastion VM"
+  type        = number
+}

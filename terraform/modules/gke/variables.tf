@@ -62,3 +62,13 @@ variable "disk_size_gb" {
   description = "Disk size in GB for each GKE node"
   type        = number
 }
+
+variable "master_cidr" {
+  description = "CIDR block for the GKE master (private cluster control plane)"
+  type        = string
+}
+
+variable "disk_type" {
+  description = "Disk type for GKE nodes (e.g. pd-standard, pd-ssd)"
+  type        = string
+}

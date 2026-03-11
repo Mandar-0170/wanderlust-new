@@ -7,8 +7,8 @@ resource "google_compute_instance" "bastion" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-      size  = 10
+      image = var.image
+      size  = var.disk_size_gb
     }
   }
 

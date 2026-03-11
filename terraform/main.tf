@@ -39,6 +39,8 @@ module "bastion" {
   network               = module.networking.vpc_id
   subnet                = module.networking.subnet_name
   machine_type          = var.bastion_machine_type
+  image                 = var.bastion_image
+  disk_size_gb          = var.bastion_disk_size_gb
   allowed_ssh_cidrs     = var.allowed_ssh_cidrs
   service_account_email = module.iam.bastion_service_account_email
 
@@ -76,6 +78,8 @@ module "gke" {
   node_count            = var.gke_node_count
   machine_type          = var.gke_machine_type
   disk_size_gb          = var.gke_disk_size_gb
+  master_cidr           = var.gke_master_cidr
+  disk_type             = var.gke_disk_type
 
   depends_on = [module.networking, module.iam]
 }

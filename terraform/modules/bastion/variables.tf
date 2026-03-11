@@ -47,3 +47,13 @@ variable "service_account_email" {
   description = "Service account email to attach to the bastion VM"
   type        = string
 }
+
+variable "image" {
+  description = "Boot disk image for the bastion VM (e.g. ubuntu-os-cloud/ubuntu-2204-lts)"
+  type        = string
+}
+
+variable "disk_size_gb" {
+  description = "Boot disk size in GB for the bastion VM"
+  type        = number
+}

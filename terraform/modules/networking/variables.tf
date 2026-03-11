@@ -32,3 +32,15 @@ variable "services_cidr" {
   description = "Secondary CIDR range for GKE services - virtual IPs for Kubernetes Services"
   type        = string
 }
+
+variable "pods_range_name" {
+  description = "Name for the secondary IP range for GKE pods"
+  type        = string
+  default     = "pods"
+}
+
+variable "services_range_name" {
+  description = "Name for the secondary IP range for GKE services"
+  type        = string
+  default     = "services"
+}
