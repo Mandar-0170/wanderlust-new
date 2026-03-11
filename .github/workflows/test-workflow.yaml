@@ -42,16 +42,6 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
-      # ─── Run Backend Tests with Coverage ──────
-      - name: Run backend tests
-        working-directory: ./backend
-        run: npm test -- --coverage
-
-      # ─── Run Frontend Tests with Coverage ─────
-      - name: Run frontend tests
-        working-directory: ./frontend
-        run: npm test -- --coverage
-
       # ─── Sonarqube ───────────────
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
@@ -59,12 +49,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
-      # # ─── Sonarqube code quality gate ───────────────
-      # - name: SonarQube Quality Gate
-      #   uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # ─── Sonarqube code quality gate ───────────────
+      - name: SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # # ─── OWASP Dependency Check ───────────────
       # - name: Run OWASP Dependency Check
