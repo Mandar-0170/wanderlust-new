@@ -3,7 +3,7 @@ locals {
   sa_account_id = "sa-${var.client_name}-${var.environment}-ghactions"
   pool_id       = "pool-${var.client_name}-${var.environment}-github"
   provider_id   = "provider-${var.client_name}-${var.environment}-github"
-  bucket_name   = "bucket-${var.client_name}-${var.environment}-tfstate"
+  bucket_name   = "buckettttt-${var.client_name}-${var.environment}-tfstate"
 
   # IAM roles granted to the GitHub Actions SA
   github_actions_roles = [
