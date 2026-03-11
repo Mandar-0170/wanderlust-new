@@ -78,8 +78,8 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
-          service_account: sa-rd-dev-ghactions@playground-488307.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       # ─── Setup gcloud CLI ──────────────────────
       - name: Setup gcloud CLI
