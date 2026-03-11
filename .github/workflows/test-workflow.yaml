@@ -57,8 +57,7 @@ jobs:
       #   uses: SonarSource/sonarqube-scan-action@v6
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    ####SONARQUBE DONE!!
-      
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    
       # # ─── Sonarqube code quality gate ───────────────
       # - name: SonarQube Quality Gate
       #   uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
@@ -69,7 +68,7 @@ jobs:
       # ─── OWASP Dependency Check ───────────────
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
-        with:                                                       ##OWASP DONE!!
+        with:                                                       
           project: "wanderlust-app"
           path: "."
           format: "HTML"
