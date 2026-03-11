@@ -47,7 +47,7 @@
     "vercel-build": "echo yay"
   },
   "jest": {
-    "globalTeardown": "./tests/teardown",
+    "globalTeardown": "./tests/teardown.ts",
     "transform": {
       "^.+\\.js?$": "babel-jest"
     }
