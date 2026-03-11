@@ -46,43 +46,43 @@ jobs:
       # - name: Run backend tests                         #Sends the coverage report to Sonarqube
       #   working-directory: ./backend                    #but there is something wrong with the code.
       #   run: npm test -- --coverage     
-                       
+
       # # ─── Run Frontend Tests with Coverage ─────      
       # - name: Run frontend tests
       #   working-directory: ./frontend
       #   run: npm test -- --coverage
 
-      # ─── Sonarqube ───────────────
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # # ─── Sonarqube ───────────────
+      # - name: SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v6
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    ####SONARQUBE DONE!!
       
-      # ─── Sonarqube code quality gate ───────────────
-      - name: SonarQube Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # # ─── Sonarqube code quality gate ───────────────
+      # - name: SonarQube Quality Gate
+      #   uses: SonarSource/sonarqube-quality-gate-action@v1  ##This will fail the workflow if the code quality is poor.
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # # ─── OWASP Dependency Check ───────────────
-      # - name: Run OWASP Dependency Check
-      #   uses: dependency-check/Dependency-Check_Action@main
-      #   with:
-      #     project: "wanderlust-app"
-      #     path: "."
-      #     format: "HTML"
-      #     out: "owasp-report"
-      #     #args: >
-      #     #  --failOnCVSS 7
+      # ─── OWASP Dependency Check ───────────────
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "wanderlust-app"
+          path: "."
+          format: "HTML"
+          out: "owasp-report"
+          args: >
+           --failOnCVSS 7    ## Will fail if the cvss score of any vulnerability is 7 or higher.
   
-      # # ─── Uploading OWASP Report ───────────────
-      # - name: Upload OWASP Report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: owasp-security-report
-      #     path: owasp-report
+      # ─── Uploading OWASP Report ───────────────
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-security-report
+          path: owasp-report
       
       # # ─── Authenticate to GCP ────────────────────
       # - name: Authenticate to Google Cloud
