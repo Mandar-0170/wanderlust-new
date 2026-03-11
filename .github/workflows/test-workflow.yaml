@@ -42,6 +42,16 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
+      #   # ─── Run Backend Tests with Coverage ──────
+      # - name: Run backend tests                         #Sends the coverage report to Sonarqube
+      #   working-directory: ./backend                    #but there is something wrong with the code.
+      #   run: npm test -- --coverage     
+                       
+      # # ─── Run Frontend Tests with Coverage ─────      
+      # - name: Run frontend tests
+      #   working-directory: ./frontend
+      #   run: npm test -- --coverage
+
       # ─── Sonarqube ───────────────
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
