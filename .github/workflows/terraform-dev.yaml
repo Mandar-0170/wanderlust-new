@@ -3,8 +3,11 @@ name: Terraform Dev Deploy
 on: workflow_dispatch
 
 jobs:
-  terraform:
-    name: Terraform Init, Plan and Apply (Dev)
+  # ──────────────────────────────────────────────
+  # Job 1: Plan — runs automatically on dispatch
+  # ──────────────────────────────────────────────
+  plan:
+    name: Terraform Plan (Dev)
     runs-on: ubuntu-latest
 
     permissions:
@@ -34,12 +37,68 @@ jobs:
         working-directory: terraform
         run: terraform init -input=false
 
-      # Terraform Plan
+      # Terraform Plan — save to file for the apply job
       - name: Terraform Plan
         working-directory: terraform
-        run: terraform plan -input=false
+        run: terraform plan -input=false -out=tfplan
 
-      # Terraform Apply
+      # Upload the plan file so the apply job can use it
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: terraform/tfplan
+          retention-days: 1
+
+  # ──────────────────────────────────────────────
+  # Job 2: Apply — requires manual approval via
+  #         GitHub Environment protection rule
+  # ──────────────────────────────────────────────
+  # SETUP REQUIRED:
+  #   1. Go to GitHub repo → Settings → Environments
+  #   2. Create an environment called "terraform-dev"
+  #   3. Enable "Required reviewers" and add approver(s)
+  # ──────────────────────────────────────────────
+  apply:
+    name: Terraform Apply (Dev)
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: terraform-dev
+
+    permissions:
+      id-token: write     # REQUIRED for Workload Identity Federation
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Authenticate to Google Cloud using Workload Identity Federation
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/917443109321/locations/global/workloadIdentityPools/pool-rd-dev-github/providers/provider-rd-dev-github
+          service_account: sa-rd-dev-ghactions@playground-488307.iam.gserviceaccount.com
+
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      # Terraform Init
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init -input=false
+
+      # Download the saved plan from the plan job
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: terraform
+
+      # Apply the exact plan that was reviewed
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -input=false tfplan
