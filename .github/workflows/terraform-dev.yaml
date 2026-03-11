@@ -3,9 +3,7 @@ name: Terraform Dev Deploy
 on: workflow_dispatch
 
 jobs:
-  # ──────────────────────────────────────────────
-  # Job 1: Plan — runs automatically on dispatch
-  # ──────────────────────────────────────────────
+  
   plan:
     name: Terraform Plan (Dev)
     runs-on: ubuntu-latest
@@ -19,7 +17,6 @@ jobs:
         uses: actions/checkout@v4
 
       # Authenticate to Google Cloud using Workload Identity Federation
-      # These values come from: cd terraform/bootstrap && terraform output
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -50,15 +47,10 @@ jobs:
           path: terraform/tfplan
           retention-days: 1
 
-  # ──────────────────────────────────────────────
+  
   # Job 2: Apply — requires manual approval via
   #         GitHub Environment protection rule
-  # ──────────────────────────────────────────────
-  # SETUP REQUIRED:
-  #   1. Go to GitHub repo → Settings → Environments
-  #   2. Create an environment called "terraform-dev"
-  #   3. Enable "Required reviewers" and add approver(s)
-  # ──────────────────────────────────────────────
+  
   apply:
     name: Terraform Apply (Dev)
     needs: plan
