@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-frontend:v1
+          image: us-central1-docker.pkg.dev/ferrous-linker-489911-f0/registry-rd-dev-docker/wanderlust-frontend:v1
           ports:
             - containerPort: 80
           readinessProbe:

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-backend:v1
+          image: us-central1-docker.pkg.dev/ferrous-linker-489911-f0/registry-rd-dev-docker/wanderlust-backend:v1
           ports:
             - containerPort: 8080
           # Inject non-sensitive vars from ConfigMap
