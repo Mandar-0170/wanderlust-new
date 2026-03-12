@@ -2,9 +2,7 @@ name: Deploy App to GKE (Dev)
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Terraform Dev Deploy"]
-    types: [completed]
+  
 
 env:
   PROJECT_ID: playground-488307
