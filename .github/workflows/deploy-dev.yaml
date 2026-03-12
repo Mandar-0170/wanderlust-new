@@ -5,11 +5,11 @@ on:
   
 
 env:
-  PROJECT_ID: playground-488307
+  PROJECT_ID: ferrous-linker-489911-f0	
   REGION: us-central1
   ZONE: us-central1-a
   CLUSTER_NAME: gke-rd-dev-cluster
-  REGISTRY: us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker
+  REGISTRY: us-central1-docker.pkg.dev/ferrous-linker-489911-f0/registry-rd-dev-docker
   BACKEND_IMAGE: wanderlust-backend
   FRONTEND_IMAGE: wanderlust-frontend
   IMAGE_TAG: ${{ github.sha }}
