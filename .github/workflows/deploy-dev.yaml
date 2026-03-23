@@ -284,7 +284,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
 
-          subject: "GKE Deploy Pipeline - ${{ env.STATUS }}"
+          subject: "GKE Deployment Pipeline - ${{ env.STATUS }}"
 
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
