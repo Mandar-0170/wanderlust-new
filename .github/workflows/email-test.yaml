@@ -36,11 +36,11 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "✅ GitHub Pipeline SUCCESS"
+          subject: "✅ GitHub Actions workflow SUCCESS"
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
           body: |
-            Pipeline completed successfully.
+            Workflow completed successfully.
 
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
@@ -60,11 +60,11 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "❌ GitHub Pipeline FAILED"
+          subject: "❌ GitHub Actions Workflow FAILED"
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
           body: |
-            Pipeline FAILED.
+            Worflow Failed.
 
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
