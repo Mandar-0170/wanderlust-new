@@ -1,18 +1,24 @@
 name: Email Notification Pipeline
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      should_fail:
+        description: "Set true to fail pipeline"
+        required: true
+        default: "false"
 
 jobs:
+
   pipeline:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Print Start Message
+      - name: Start Pipeline
         run: echo "Starting pipeline..."
 
       - name: Simulate Success or Failure
+        id: run_step
         run: |
           if [ "${{ github.event.inputs.should_fail }}" == "true" ]; then
             echo "Forcing failure..."
@@ -21,7 +27,7 @@ jobs:
             echo "Pipeline succeeded!"
           fi
 
-      # Send email if pipeline succeeds
+      # ✅ Success Email
       - name: Send Success Email
         if: success()
         uses: dawidd6/action-send-mail@v3
@@ -30,11 +36,11 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "GitHub Pipeline SUCCESS"
+          subject: "✅ GitHub Pipeline SUCCESS"
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
           body: |
-            The GitHub Actions pipeline completed successfully.
+            Pipeline completed successfully.
 
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
@@ -44,25 +50,26 @@ jobs:
             Logs:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-      # Send email if pipeline fails
+      # ❌ Failure Email (WILL RUN EVEN AFTER FAILURE)
       - name: Send Failure Email
         if: failure()
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "GitHub Pipeline FAILED"
+          subject: "❌ GitHub Pipeline FAILED"
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
           body: |
-            The GitHub Actions pipeline FAILED.
+            Pipeline FAILED.
 
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
             Workflow: ${{ github.workflow }}
             Run ID: ${{ github.run_id }}
 
-            Check logs here:
+            Check logs:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
