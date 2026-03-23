@@ -97,3 +97,49 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -input=false tfplan
+
+  notify:
+    name: Send Notification
+    needs: [plan, apply]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+
+      - name: Determine Status
+        id: status
+        run: |
+          if [[ "${{ needs.plan.result }}" == "failure" ]]; then
+            echo "STATUS=FAILED (Plan Stage)" >> $GITHUB_ENV
+          elif [[ "${{ needs.apply.result }}" == "failure" ]]; then
+            echo "STATUS=FAILED (Apply Stage)" >> $GITHUB_ENV
+          elif [[ "${{ needs.apply.result }}" == "skipped" ]]; then
+            echo "STATUS=SKIPPED (Awaiting Approval or Not Triggered)" >> $GITHUB_ENV
+          else
+            echo "STATUS=SUCCESS" >> $GITHUB_ENV
+          fi
+
+      # ✅ Send Email (Single Step)
+      - name: Send Email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "GitHub Workflow - ${{ env.STATUS }}"
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            Workflow Status: ${{ env.STATUS }}
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+
+            Plan Job Status: ${{ needs.plan.result }}
+            Apply Job Status: ${{ needs.apply.result }}
+
+            Logs:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
