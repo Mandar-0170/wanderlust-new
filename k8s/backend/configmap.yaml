@@ -1,0 +1,35 @@
+# ──────────────────────────────────────────────
+# ConfigMap — non-sensitive backend env vars
+# ──────────────────────────────────────────────
+# After deploying the Ingress, update FRONTEND_URL and
+# BACKEND_URL with the real Ingress external IP.
+# ──────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wanderlust-config
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: backend
+data:
+  PORT: "8080"
+  NODE_ENV: "production"
+
+  # K8s service names — these resolve via cluster DNS
+  MONGODB_URI: "mongodb://mongodb:27017/wanderlust"
+  REDIS_URL: "redis://redis:6379"
+
+  # URLs — update these after Ingress IP is assigned
+  # e.g. http://34.x.x.x
+  FRONTEND_URL: "http://INGRESS_IP_PLACEHOLDER"
+  BACKEND_URL: "http://INGRESS_IP_PLACEHOLDER"
+
+  # Google OAuth (non-secret)
+  GOOGLE_CLIENT_ID: "85044328168-n81190ob9p1bvmob8tiu60eastru4aiq.apps.googleusercontent.com"
+
+  # JWT token expiry
+  ACCESS_COOKIE_MAXAGE: "120000"
+  ACCESS_TOKEN_EXPIRES_IN: "120s"
+  REFRESH_COOKIE_MAXAGE: "120000"
+  REFRESH_TOKEN_EXPIRES_IN: "120s"

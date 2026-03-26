@@ -1,0 +1,75 @@
+name: Email Notification Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      should_fail:
+        description: "Set true to fail pipeline"
+        required: true
+        default: "false"
+
+jobs:
+
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Start Pipeline
+        run: echo "Starting pipeline..."
+
+      - name: Simulate Success or Failure
+        id: run_step
+        run: |
+          if [ "${{ github.event.inputs.should_fail }}" == "true" ]; then
+            echo "Forcing failure..."
+            exit 1
+          else
+            echo "Pipeline succeeded!"
+          fi
+
+      # ✅ Success Email
+      - name: Send Success Email
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "✅ GitHub Actions workflow SUCCESS"
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            Workflow completed successfully.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+
+            Logs:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      # ❌ Failure Email (WILL RUN EVEN AFTER FAILURE)
+      - name: Send Failure Email
+        if: failure()
+        continue-on-error: true
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "❌ GitHub Actions Workflow FAILED"
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            Worflow Failed.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+
+            Check logs:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

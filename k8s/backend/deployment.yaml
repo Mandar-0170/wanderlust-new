@@ -1,0 +1,77 @@
+# ──────────────────────────────────────────────
+# Backend — Deployment + ClusterIP Service
+# ──────────────────────────────────────────────
+# Image is pulled from Artifact Registry:
+#   us-central1-docker.pkg.dev/playground-488307/registry-rd-dev-docker/wanderlust-backend:<tag>
+# ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wanderlust
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: wanderlust
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: us-central1-docker.pkg.dev/ferrous-linker-489911-f0/registry-rd-dev-docker/wanderlust-backend:v1
+          ports:
+            - containerPort: 8080
+          # Inject non-sensitive vars from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: wanderlust-config
+            # Inject sensitive vars from Secret
+            - secretRef:
+                name: wanderlust-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: wanderlust
+  labels:
+    app: wanderlust
+    component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: wanderlust
+    component: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
