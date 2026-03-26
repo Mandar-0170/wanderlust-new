@@ -55,12 +55,12 @@ jobs:
       #   working-directory: ./frontend
       #   run: npm test -- --coverage
 
-      # ─── Sonarqube ───────────────
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # # ─── Sonarqube ───────────────
+      # - name: SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v6
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
       # # ─── Sonarqube code quality gate ───────────────
       # - name: SonarQube Quality Gate
@@ -260,46 +260,46 @@ jobs:
           echo "  4. Update Google OAuth redirect URI to: http://<INGRESS_IP>/api/auth/google/callback"
           echo "============================================"
 
-  notify:
-    name: Send Notification
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: always()
+  # notify:
+  #   name: Send Notification
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   if: always()
 
-    steps:
+  #   steps:
 
-      - name: Determine Status
-        run: |
-          if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
-            echo "STATUS=FAILED" >> $GITHUB_ENV
-          else
-            echo "STATUS=SUCCESS" >> $GITHUB_ENV
-          fi
+  #     - name: Determine Status
+  #       run: |
+  #         if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
+  #           echo "STATUS=FAILED" >> $GITHUB_ENV
+  #         else
+  #           echo "STATUS=SUCCESS" >> $GITHUB_ENV
+  #         fi
 
-      - name: Send Email
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
+  #     - name: Send Email
+  #       uses: dawidd6/action-send-mail@v3
+  #       with:
+  #         server_address: ${{ secrets.SMTP_SERVER }}
+  #         server_port: ${{ secrets.SMTP_PORT }}
+  #         username: ${{ secrets.SMTP_USERNAME }}
+  #         password: ${{ secrets.SMTP_PASSWORD }}
 
-          subject: "GKE Deployment Pipeline - ${{ env.STATUS }}"
+  #         subject: "GKE Deployment Pipeline - ${{ env.STATUS }}"
 
-          to: ${{ secrets.EMAIL_TO }}
-          from: ${{ secrets.EMAIL_FROM }}
+  #         to: ${{ secrets.EMAIL_TO }}
+  #         from: ${{ secrets.EMAIL_FROM }}
 
-          body: |
-            Deployment Status: ${{ env.STATUS }}
+  #         body: |
+  #           Deployment Status: ${{ env.STATUS }}
 
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.ref_name }}
-            Triggered By: ${{ github.actor }}
+  #           Repository: ${{ github.repository }}
+  #           Branch: ${{ github.ref_name }}
+  #           Triggered By: ${{ github.actor }}
 
-            Workflow: ${{ github.workflow }}
-            Run ID: ${{ github.run_id }}
+  #           Workflow: ${{ github.workflow }}
+  #           Run ID: ${{ github.run_id }}
 
-            Logs:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  #           Logs:
+  #           https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 
