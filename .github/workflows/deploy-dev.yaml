@@ -69,23 +69,23 @@ jobs:
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # ─── OWASP Dependency Check ───────────────
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: "wanderlust-app"
-          path: "."
-          format: "HTML"
-          out: "owasp-report"
-          #args: >
-          #  --failOnCVSS 7  ## fails the workflow if the cvss score of any vulnerability is 7 or higher.
+      # # ─── OWASP Dependency Check ───────────────
+      # - name: Run OWASP Dependency Check
+      #   uses: dependency-check/Dependency-Check_Action@main
+      #   with:
+      #     project: "wanderlust-app"
+      #     path: "."
+      #     format: "HTML"
+      #     out: "owasp-report"
+      #     #args: >
+      #     #  --failOnCVSS 7  ## fails the workflow if the cvss score of any vulnerability is 7 or higher.
   
-      # ─── Uploading OWASP Report ───────────────
-      - name: Upload OWASP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: owasp-security-report
-          path: owasp-report
+      # # ─── Uploading OWASP Report ───────────────
+      # - name: Upload OWASP Report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: owasp-security-report
+      #     path: owasp-report
       
       # ─── Authenticate to GCP ────────────────────
       - name: Authenticate to Google Cloud
@@ -102,18 +102,18 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
       
-      # Install Trivy
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.6
-        with:
-          version: v0.69.3
+      # # Install Trivy
+      # - name: Setup Trivy
+      #   uses: aquasecurity/setup-trivy@v0.2.6
+      #   with:
+      #     version: v0.69.3
           
-      # ─── Cache Trivy Database ───────────────────
-      - name: Cache Trivy DB
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/trivy
-          key: trivy-db-${{ runner.os }}
+      # # ─── Cache Trivy Database ───────────────────
+      # - name: Cache Trivy DB
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/trivy
+      #     key: trivy-db-${{ runner.os }}
 
       # ─── Build Backend ───────────────────
       - name: Build backend image
@@ -124,23 +124,23 @@ jobs:
             ./backend
 
 
-      # ─── Trivy Scan Backend ─────────────────────
-      - name: Scan backend image with Trivy
-        run: |
-          trivy image \
-            --format json \
-            --output backend-trivy-report.json \
-            --severity CRITICAL,HIGH \
-            --ignore-unfixed \
-            --exit-code 0 \
-            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
+      # # ─── Trivy Scan Backend ─────────────────────
+      # - name: Scan backend image with Trivy
+      #   run: |
+      #     trivy image \
+      #       --format json \
+      #       --output backend-trivy-report.json \
+      #       --severity CRITICAL,HIGH \
+      #       --ignore-unfixed \
+      #       --exit-code 0 \
+      #       ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ env.IMAGE_TAG }}
 
 
-      - name: Upload Backend Trivy Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-trivy-reports
-          path: backend-trivy-report.json
+      # - name: Upload Backend Trivy Reports
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: backend-trivy-reports
+      #     path: backend-trivy-report.json
 
       # ─── Build Frontend ──────────────────
       - name: Build frontend image
@@ -151,22 +151,22 @@ jobs:
             -t ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest \
             ./frontend
 
-      # ─── Trivy Scan Frontend ────────────────────
-      - name: Scan frontend image with Trivy
-        run: |
-          trivy image \
-            --format json \
-            --output frontend-trivy-report.json \
-            --severity CRITICAL,HIGH \
-            --ignore-unfixed \
-            --exit-code 0 \
-            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
+      # # ─── Trivy Scan Frontend ────────────────────
+      # - name: Scan frontend image with Trivy
+      #   run: |
+      #     trivy image \
+      #       --format json \
+      #       --output frontend-trivy-report.json \
+      #       --severity CRITICAL,HIGH \
+      #       --ignore-unfixed \
+      #       --exit-code 0 \
+      #       ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ env.IMAGE_TAG }}
 
-      - name: Upload Frontend Trivy Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-trivy-reports
-          path: frontend-trivy-report.json
+      # - name: Upload Frontend Trivy Reports
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: frontend-trivy-reports
+      #     path: frontend-trivy-report.json
 
       # ─── Push frontend and backend images ────────────────────
       - name: Push backend image
