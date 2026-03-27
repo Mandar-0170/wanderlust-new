@@ -17,6 +17,10 @@ sudo systemctl enable docker
 echo "Adding user to docker group..."
 sudo usermod -aG docker $USER
 
+gcloud projects add-iam-policy-binding ferrous-linker-489911-f0 \
+  --member="user:radnampandit21@gmail.com" \
+  --role="roles/artifactregistry.writer"
+
 echo "Authenticating Docker with GCP..."
 gcloud auth configure-docker $REGION-docker.pkg.dev -q
 
