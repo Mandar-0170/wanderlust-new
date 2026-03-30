@@ -23,7 +23,7 @@ gcloud projects add-iam-policy-binding ferrous-linker-489911-f0 \
   --role="roles/artifactregistry.writer"
 
 echo "Authenticating Docker with GCP..."
-gcloud auth configure-docker $REGION-docker.pkg.dev -q
+sudo gcloud auth configure-docker $REGION-docker.pkg.dev -q
 
 gcloud artifacts repositories add-iam-policy-binding registry-rd-dev-docker \
   --location=us-central1 \
