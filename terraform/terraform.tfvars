@@ -18,7 +18,7 @@ allowed_ssh_cidrs    = ["0.0.0.0/0"]
 
 # GKE
 gke_node_count   = 2
-gke_machine_type = "e2-medium"
+gke_machine_type = "e2-standard-4"
 gke_disk_size_gb = 20
 gke_master_cidr  = "172.16.0.0/28"
 gke_disk_type    = "pd-standard"
