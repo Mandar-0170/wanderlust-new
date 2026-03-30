@@ -45,3 +45,5 @@ sudo docker push \
 $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/grafana:12.4.0
 
 echo "Done pushing images"
+
+kubectl create namespace monitoring
