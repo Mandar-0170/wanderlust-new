@@ -13,6 +13,9 @@ spec:
       labels:
         app: loki
     spec:
+      securityContext:
+        fsGroup: 10001
+
       containers:
       - name: loki
         image: grafana/loki:2.9.3
@@ -20,6 +23,7 @@ spec:
           - -config.file=/etc/loki/loki.yaml
         ports:
         - containerPort: 3100
+
         resources:
           requests:
             cpu: 100m
@@ -27,14 +31,18 @@ spec:
           limits:
             cpu: 500m
             memory: 1Gi
+
         volumeMounts:
         - name: config
           mountPath: /etc/loki
+
         - name: storage
           mountPath: /loki
+
       volumes:
       - name: config
         configMap:
           name: loki-config
+
       - name: storage
         emptyDir: {}
